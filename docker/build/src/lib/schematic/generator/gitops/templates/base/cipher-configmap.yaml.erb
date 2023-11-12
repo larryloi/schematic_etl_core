@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: <%= app %>-cipher-configmap
+data:
+  SCHEMATIC_CIPHER_ALGORITHM: <%= ENV['SCHEMATIC_CIPHER_ALGORITHM'] %>
+  SCHEMATIC_CIPHER_KEY_LENGTH: "<%= ENV['SCHEMATIC_CIPHER_KEY_LENGTH'] %>"
+  SCHEMATIC_CIPHER_ISSUER: <%= ENV['SCHEMATIC_CIPHER_ISSUER'] %>

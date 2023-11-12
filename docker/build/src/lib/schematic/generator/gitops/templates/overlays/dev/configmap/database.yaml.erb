@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: <%= app %>-database-configmap
+data:
+  DB_HOST: <%= ENV['DB_HOST'] %>
+  DB_NAME: <%= ENV['DB_NAME'] %>
+  DB_TYPE: <%= ENV['DB_TYPE'] %>
+  DB_ADAPTER: <%= ENV['DB_ADAPTER'] %>
+  DATABASE_URL: <%= ENV['DATABASE_URL'] %>
