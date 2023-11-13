@@ -13,6 +13,8 @@ namespace :job do
 
   desc "Apply jobs"
   task :deploy do |_, args|
+    require "dotenv"
+    Dotenv.load(*Dir["#{ENV['ENV_HOME']}/**/*.env"])
     Schematic::Job.new.deploy
   end
 end

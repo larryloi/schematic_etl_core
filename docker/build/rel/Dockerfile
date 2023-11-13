@@ -26,11 +26,7 @@ RUN apk add --no-cache \
         build-base gcompat && \
         \
         bundle config set without "development test" && \
-        bundle install --jobs=3 --retry=3  && \
-        chown -R 1001:0 ${SCHEMATIC_HOME} && \
-        chmod -R g=u ${SCHEMATIC_HOME} && \
-        chown -R 1001:0 ${APP_HOME} && \
-        chmod -R g=u ${APP_HOME}
+        bundle install --jobs=3 --retry=3
 
 FROM base
 
@@ -83,4 +79,3 @@ LABEL org.opencontainers.image.title=${project}-${app} \
     org.metasync.ruby.version=${ruby_version} \
     org.metasync.alpine.version=${alpine_version}
 
-USER 1001

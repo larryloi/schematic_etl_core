@@ -26,11 +26,7 @@ RUN apk add --no-cache \
         \
         gem install rubocop -v '~> 1.50' && \
         gem install rubocop-rspec -v '~> 2.20' && \
-        bundle install --jobs=3 --retry=3  && \
-        chown -R 1001:0 ${SCHEMATIC_HOME} && \
-        chmod -R g=u ${SCHEMATIC_HOME} && \
-        chown -R 1001:0 ${APP_HOME} && \
-        chmod -R g=u ${APP_HOME}
+        bundle install --jobs=3 --retry=3
 
 ARG project
 ARG app
@@ -74,4 +70,3 @@ LABEL org.opencontainers.image.title=${project}-${app} \
     org.metasync.ruby.version=${ruby_version} \
     org.metasync.alpine.version=${alpine_version}
 
-USER 1001

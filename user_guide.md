@@ -1,6 +1,7 @@
 # Intruduction
 An Rdb schema migration tools that develop on ruby and Supporting SQL Server and MySQL. This help you to deploy you database schema change. stored procedure and create or update agent job on SQL Server formally and solidly.
 
+
 - [Intruduction](#intruduction)
 - [Functions](#functions)
 - [Development, Testing phases](#development-testing-phases)
@@ -17,6 +18,7 @@ An Rdb schema migration tools that develop on ruby and Supporting SQL Server and
     - [Database migration create and deploy](#database-migration-create-and-deploy)
     - [Stored Procedures create and deploy](#stored-procedures-create-and-deploy)
     - [SQL Server jobs create and deploy](#sql-server-jobs-create-and-deploy)
+  - [Building/Push applicaiton images](#buildingpush-applicaiton-images)
   - [Project folder structure](#project-folder-structure)
 
 
@@ -47,14 +49,14 @@ git clone https://github.com/larryloi/schematic.git
 **Open Terminal and run build image command**
 ```bash
 cd docker
-make build.base.dev
+make build.base.rel
 ```
 **The below schematic-base will be built**
 ```bash
 ubt23 :: temp/schematic/docker ‹main› » docker images
 REPOSITORY                        TAG                     IMAGE ID       CREATED        SIZE
-quay.io/metasync/schematic-base   0.2.0-dev               dd8b8c8aa215   24 hours ago   413MB
-quay.io/metasync/schematic-base   0.2.0-dev.0             dd8b8c8aa215   24 hours ago   413MB
+quay.io/metasync/schematic-base   0.2.0-rel               dd8b8c8aa215   24 hours ago   413MB
+quay.io/metasync/schematic-base   0.2.0-rel.0             dd8b8c8aa215   24 hours ago   413MB
 ```
 ### Create development project
 In schematic home path, execute the below command, that creates project template for development. This project folder will be created in parent folder in this case.
@@ -71,6 +73,20 @@ We need to kick start the container that including dev.app and dev.db to devlop 
 ```bash
 ## MSSQL
 vi docker/make.env/mssql/secret.env
+```
+
+The below environment file that indicated which base image to use for container startup. The ```DEV_BASE_IMAGE_VERSION``` AND ```DEV_BASE_IMAGE_RELEASE_TAG``` may need to change accordingly.
+```bash
+cat docker/make.env/base_image.env
+
+# Dev base image
+DEV_BASE_IMAGE_NAME=schematic_base
+DEV_BASE_IMAGE_VERSION=0.2.5
+DEV_BASE_IMAGE_RELEASE_TAG=rel
+DEV_BASE_IMAGE_BUILD_NUMBER=0
+DEV_BASE_IMAGE_REPO=${IMAGE_REPO_ROOT}/${DEV_BASE_IMAGE_NAME}
+DEV_BASE_IMAGE_TAG=${DEV_BASE_IMAGE_VERSION}-${DEV_BASE_IMAGE_RELEASE_TAG}.${DEV_BASE_IMAGE_BUILD_NUMBER}
+DEV_BASE_IMAGE=${DEV_BASE_IMAGE_REPO}:${DEV_BASE_IMAGE_TAG}
 ```
 
 ### Start project container
@@ -210,7 +226,7 @@ rake sp:deploy
 ```bash
 rake job:create[data-staging_acsc_CPFAI01a]
 New job template is created: /home/app/jobs/data-staging_acsc/data-staging_acsc_CPFAI01a.yaml
-New environment template is created: /home/app/env/jobs/data-staging_acsc_CPFAI01a_env.yaml
+New environment template is created: /home/app/env/jobs/data-staging_acsc_CPFAI01a.env
 ```
 
 **Edit the Job files**
@@ -239,6 +255,22 @@ rake job:deploy
 ---------------------------------------------
 /home/app $ 
 ```
+
+## Building/Push applicaiton images
+Exit the container, in project folder below VERSION file, ensure the proper version.
+
+```<Project-Path>/src/VERSION```
+
+Run below command to build your application images
+```bash
+make build.app.rel
+```
+
+Run below command to push your application images to repositry
+```bash
+make push.app.rel
+```
+
 
 ## Project folder structure
 Here is the project folder structure for a sample project:
