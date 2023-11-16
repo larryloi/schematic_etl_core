@@ -9,33 +9,33 @@ module Schematic
       job_template = <<~JOBTEMPLATE
         # frozen_string_literal: true
         ---
-          enabled: <%= ENV['TMPL_ENABLED'] || ENV['JOB_ENABLED'] %>
-          delete_level: <%= ENV['TMPL_DELETE_LEVEL'] || ENV['JOB_DELETE_LEVEL'] %>
+          enabled: <%= ENV['TMPL_ENABLED'] %>
+          delete_level: <%= ENV['TMPL_DELETE_LEVEL'] %>
           description: _TEMPLATE
-          category_name: _TEMPLATE
+          category_name: ETL - Data Staging
           owner_login_name: schematic
-          schedule_name: _TEMPLATE
-          schedule_enabled: <%= ENV['TMPL_SCHEDULE_ENABLED'] || ENV['JOB_SCHEDULE_ENABLED'] %>
-          schedule_freq_type: 4 <%= ENV['TMPL_SCHEDULE_FREQ_TYPE'] || ENV['JOB_SCHEDULE_FREQ_TYPE'] %>
-          schedule_freq_interval: <%= ENV['TMPL_SCHEDULE_FREQ_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_INTERVAL'] %>
-          schedule_freq_subday_type: <%= ENV['TMPL_SCHEDULE_FREQ_SUBDAY_TYPE'] || ENV['JOB_SCHEDULE_FREQ_SUBDAY_TYPE'] %>
-          schedule_freq_subday_interval: <%= ENV['TMPL_SCHEDULE_FREQ_SUBDAY_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_SUBDAY_INTERVAL'] %>
-          schedule_freq_relative_interval: <%= ENV['TMPL_SCHEDULE_FREQ_RELATIVE_INTERVAL'] || ENV['JOB_SCHEDULE_FREQ_RELATIVE_INTERVAL'] %>
-          schedule_freq_recurrence_factor: <%= ENV['TMPL_SCHEDULE_FREQ_RECURRENCE_FACTOR'] || ENV['JOB_SCHEDULE_FREQ_RECURRENCE_FACTOR'] %>
-          schedule_active_start_date: <%= ENV['TMPL_SCHEDULE_ACTIVE_START_DATE'] || ENV['JOB_SCHEDULE_ACTIVE_START_DATE'] %>
-          schedule_active_end_date: <%= ENV['TMPL_SCHEDULE_ACTIVE_END_DATE'] || ENV['JOB_SCHEDULE_ACTIVE_END_DATE'] %>
-          schedule_active_start_time: <%= ENV['TMPL_SCHEDULE_ACTIVE_START_TIME'] || ENV['JOB_SCHEDULE_ACTIVE_START_TIME'] %>
-          schedule_active_end_time: <%=  ENV['TMPL_SCHEDULE_ACTIVE_END_TIME'] || ENV['JOB_SCHEDULE_ACTIVE_END_TIME'] %>
+          schedule_name: _Hourly_Schedule_
+          schedule_enabled: <%= ENV['TMPL_SCHEDULE_ENABLED'] %>
+          schedule_freq_type: 4 <%= ENV['TMPL_SCHEDULE_FREQ_TYPE'] %>
+          schedule_freq_interval: <%= ENV['TMPL_SCHEDULE_FREQ_INTERVAL'] %>
+          schedule_freq_subday_type: <%= ENV['TMPL_SCHEDULE_FREQ_SUBDAY_TYPE']  %>
+          schedule_freq_subday_interval: <%= ENV['TMPL_SCHEDULE_FREQ_SUBDAY_INTERVAL'] %>
+          schedule_freq_relative_interval: <%= ENV['TMPL_SCHEDULE_FREQ_RELATIVE_INTERVAL'] %>
+          schedule_freq_recurrence_factor: <%= ENV['TMPL_SCHEDULE_FREQ_RECURRENCE_FACTOR'] %>
+          schedule_active_start_date: <%= ENV['TMPL_SCHEDULE_ACTIVE_START_DATE'] %>
+          schedule_active_end_date: <%= ENV['TMPL_SCHEDULE_ACTIVE_END_DATE'] %>
+          schedule_active_start_time: <%= ENV['TMPL_SCHEDULE_ACTIVE_START_TIME'] %>
+          schedule_active_end_time: <%=  ENV['TMPL_SCHEDULE_ACTIVE_END_TIME'] %>
           job_steps:
             - id: 1
-              name: Executing sp_template
+              name: Transform Step 1
               command: |
                 EXEC sp_template;
                 GO;
                 SELECT GETDATE();
                 GO;
             - id: 2
-              name: Executing sp_template again
+              name: Transform Step 2
               command: EXEC sp_template
       JOBTEMPLATE
 
@@ -55,7 +55,7 @@ module Schematic
         TMPL_SCHEDULE_FREQ_RECURRENCE_FACTOR=0
         TMPL_SCHEDULE_ACTIVE_START_DATE=20181010
         TMPL_SCHEDULE_ACTIVE_END_DATE=99991231
-        TMPL_SCHEDULE_ACTIVE_START_TIME=110000
+        TMPL_SCHEDULE_ACTIVE_START_TIME=000000
         TMPL_SCHEDULE_ACTIVE_END_TIME=235959
       ENVTEMPLATE
 
@@ -88,11 +88,6 @@ module Schematic
 
       job_db = db_connection
 
-      # Load general configuration
-      general_config_file = File.join( work_dir, 'jobs/general.yaml')
-      general_config = YAML.load(ERB.new(File.read(general_config_file)).result)
-
-      puts "  >> Loading general configuration from #{general_config_file}\n\n"
 
       # Begin transaction
       job_db.transaction do
@@ -105,10 +100,6 @@ module Schematic
           puts "  >> Loading configuration from #{file}\n"
 
           config_job_name = File.basename(file, ',*').chomp(File.extname(file))
-
-          # Merge general parameters with job-specific parameters
-          # Job-specific parameters will overwrite general parameters if they exist
-          config = general_config.merge(config)
 
           # Set variables
           category_name = config['category_name']

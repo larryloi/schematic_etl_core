@@ -18,13 +18,16 @@ An Rdb schema migration tools that develop on ruby and Supporting SQL Server and
     - [Database migration create and deploy](#database-migration-create-and-deploy)
     - [Stored Procedures create and deploy](#stored-procedures-create-and-deploy)
     - [SQL Server jobs create and deploy](#sql-server-jobs-create-and-deploy)
+    - [Deploy All (DB schema, stored procedures, Agent jobs)](#deploy-all-db-schema-stored-procedures-agent-jobs)
+    - [Generate cipher keys](#generate-cipher-keys)
+    - [Generate GitOps config](#generate-gitops-config)
   - [Building/Push applicaiton images](#buildingpush-applicaiton-images)
   - [Project folder structure](#project-folder-structure)
 
 
 # Functions
 - SQL Server, help to create database schema, and create SQL Server Agent jobs
-- MySQL, help to create database schema.
+- PostgreSQL, help to create database schema.
 
 # Development, Testing phases
 In development phase, we hope to have a environment that build up fast and work independent, with the tools here, build our self-contain a development environment and also prepare some sample data for testing purpose.
@@ -55,8 +58,8 @@ make build.base.rel
 ```bash
 ubt23 :: temp/schematic/docker ‹main› » docker images
 REPOSITORY                        TAG                     IMAGE ID       CREATED        SIZE
-quay.io/metasync/schematic-base   0.2.0-rel               dd8b8c8aa215   24 hours ago   413MB
-quay.io/metasync/schematic-base   0.2.0-rel.0             dd8b8c8aa215   24 hours ago   413MB
+quay.io/metasync/schematic_base   0.2.5-rel               7a4144e23fd4   18 minutes ago   137MB
+quay.io/metasync/schematic_base   0.2.5-rel.0             7a4144e23fd4   18 minutes ago   137MB
 ```
 ### Create development project
 In schematic home path, execute the below command, that creates project template for development. This project folder will be created in parent folder in this case.
@@ -118,7 +121,10 @@ make shell.dev
 **List rake tasks avalable**
 Schematic provides a few handy rake tasks out-of-box:
 ```bash
-rake -T
+/home/app # rake -T
+rake app:env                          # Load environment settings
+rake app:version                      # Show application version
+rake check                            # Perform configuration checks
 rake cipher:decrypt_env_var[env_var]  # Decrypt an environment variable
 rake cipher:encrypt[string]           # Encrypt a string
 rake cipher:encrypt_env_var[env_var]  # Encrypt an environment variable
@@ -134,22 +140,32 @@ rake db:migrations_to_apply           # Show schema migrations to apply
 rake db:redo[steps]                   # Redo last n migrations
 rake db:reset                         # Remove migrations and re-run migrations
 rake db:rollback[steps]               # Rollback last n migrations
+rake db:test                          # Test database connection
 rake deploy                           # Run deployment
+rake gitops:generate                  # Generate GitOps config
 rake job:create[name]                 # Create job template files
 rake job:deploy                       # Apply jobs
+rake schematic:version                # Show Schematic version
 rake sp:create[name]                  # Create a stored procedure template file
 rake sp:deploy                        # Apply stored procedures
+rake version                          # Show version info
 ```
 
 ### Database migration create and deploy
 After a new project is created, it is most likely to create your database migration before any other development work:
 
 ```bash
-rake db:create_migration[create_table_CFPAI01a]
-New migration is created: /home/app/db/migrations/data-staging_acsc/20231101084508_create_table_CFPAI01a.rb
+rake db:create_migration[create_table_CFPAI01]
+New migration is created: /home/app/db/migrations/20231116093953_create_table_CFPAI01.rb
 
-rake db:create_migration[CFPAI_add_index_DTCTAI_ACCTAI]
-New migration is created: /home/app/db/migrations/data-staging_acsc/20231101084529_CFPAI_add_index_DTCTAI_ACCTAI.rb
+rake db:create_migration[create_table_CFPAI02]
+New migration is created: /home/app/db/migrations/20231116093959_create_table_CFPAI02.rb
+
+rake db:create_migration[CFPAI02_add_column_created_at]
+New migration is created: /home/app/db/migrations/20231116094039_CFPAI02_add_column_created_at.rb
+
+rake db:create_migration[CFPAI01_add_index_VALDAI_PRIDAI]
+New migration is created: /home/app/db/migrations/20231116094808_CFPAI01_add_index_VALDAI_PRIDAI.rb
 
 ```
 
@@ -196,8 +212,8 @@ rake db:migrate
 ### Stored Procedures create and deploy
 **Create Stored Procedures from template**
 ```bash
-rake sp:create[sp_acsc_CFPAI]
-New Stored procedure template is created: /home/app/stored_procedures/data-staging_acsc/sp_acsc_CFPAI.sql
+rake sp:create[sp_acsc_CFPAI01_daily_agg]
+New Stored procedure template is created: /home/app/stored_procedures/data_staging_acsc/sp_acsc_CFPAI01_daily_agg.sql
 ```
 
 **Edit the migration scripts**
@@ -211,22 +227,28 @@ Run the below command to deploy your Stored procedures, please be noted that the
 ```bash
 rake sp:deploy
 
-  >> Executing script from /home/app/stored_procedures/data-staging_acsc/sp_acsc_CGGAI.sql
 
-  >> Update existing stored procedure
-
-  >> Executing script from /home/app/stored_procedures/data-staging_acsc/sp_acsc_CFPAI.sql
-
+  >> Executing script from /home/app/stored_procedures/data_staging_acsc/sp_acsc_CFPAI01_daily_agg.sql
+/usr/local/bundle/gems/sequel-5.74.0/lib/sequel/adapters/tinytds.rb:34: warning: undefining the allocator of T_DATA class TinyTds::Result
   >> Create new stored procedure.
+
+
+  >> Executing script from /home/app/stored_procedures/data_staging_acsc/sp_acsc_CFPAI02_daily_agg.sql
+  >> Update existing stored procedure.
+
 ```
 **Notes** the deployment will create New
 
 ### SQL Server jobs create and deploy
 **Create SQL Server jobs from template**
 ```bash
-rake job:create[data-staging_acsc_CPFAI01a]
-New job template is created: /home/app/jobs/data-staging_acsc/data-staging_acsc_CPFAI01a.yaml
-New environment template is created: /home/app/env/jobs/data-staging_acsc_CPFAI01a.env
+rake job:create[acsc_CFPAI01_daily_agg]
+New job template is created: /home/app/jobs/data_staging_acsc/acsc_CFPAI01_daily_agg.yaml
+New environment template is created: /home/env/jobs/acsc_CFPAI01_daily_agg.env
+
+rake job:create[acsc_CFPAI02_daily_agg]
+New job template is created: /home/app/jobs/data_staging_acsc/acsc_CFPAI02_daily_agg.yaml
+New environment template is created: /home/env/jobs/acsc_CFPAI02_daily_agg.env
 ```
 
 **Edit the Job files**
@@ -238,22 +260,83 @@ Edit these file under the path
   
   by ```VScode```.
 
-**Deploy Stored procedures**
+**Deploy Agent Jobs**
 
 Run the below command to deploy your Stored procedures
 ```bash
 rake job:deploy
-/usr/local/bundle/gems/sequel-5.73.0/lib/sequel/adapters/tinytds.rb:34: warning: undefining the allocator of T_DATA class TinyTds::Result
-  >> Loading general configuration from /home/app/jobs/general.yaml
-
-  >> Loading configuration from /home/app/jobs/data-staging_acsc/data-staging_acsc_CPFAI01a.yaml
-  >> Creating job data-staging_acsc_CPFAI01a
-    >> Adding step Executing sp_template
-    >> Adding step Executing sp_template again
-  >> Adding schedule to the job data-staging_acsc_CPFAI01a
-  >> Adding server to the job data-staging_acsc_CPFAI01a
+/usr/local/bundle/gems/sequel-5.74.0/lib/sequel/adapters/tinytds.rb:34: warning: undefining the allocator of T_DATA class TinyTds::Result
+  >> Loading configuration from /home/app/jobs/data_staging_acsc/acsc_CFPAI01_daily_agg.yaml
+  >> Creating job acsc_CFPAI01_daily_agg
+    >> Adding step Transform Step 1
+    >> Adding step Transform Step 2
+  >> Adding schedule to the job acsc_CFPAI01_daily_agg
+  >> Adding server to the job acsc_CFPAI01_daily_agg
 ---------------------------------------------
-/home/app $ 
+  >> Loading configuration from /home/app/jobs/data_staging_acsc/acsc_CFPAI02_daily_agg.yaml
+  >> Creating job acsc_CFPAI02_daily_agg
+    >> Adding step Transform Step 1
+    >> Adding step Transform Step 2
+  >> Adding schedule to the job acsc_CFPAI02_daily_agg
+  >> Adding server to the job acsc_CFPAI02_daily_agg
+---------------------------------------------
+```
+
+### Deploy All (DB schema, stored procedures, Agent jobs)
+
+Run ```rake deploy```
+
+```bash
+rake deploy
+/usr/local/bundle/gems/sequel-5.74.0/lib/sequel/adapters/tinytds.rb:34: warning: undefining the allocator of T_DATA class TinyTds::Result
+Completed migration up of data_staging_acsc
+
+  >> Executing script from /home/app/stored_procedures/data_staging_acsc/sp_acsc_CFPAI01_daily_agg.sql
+  >> Update existing stored procedure.
+
+
+  >> Executing script from /home/app/stored_procedures/data_staging_acsc/sp_acsc_CFPAI02_daily_agg.sql
+  >> Update existing stored procedure.
+
+  >> Loading configuration from /home/app/jobs/data_staging_acsc/acsc_CFPAI01_daily_agg.yaml
+  >> Creating job acsc_CFPAI01_daily_agg
+    >> Adding step Transform Step 1
+    >> Adding step Transform Step 2
+  >> Adding schedule to the job acsc_CFPAI01_daily_agg
+  >> Adding server to the job acsc_CFPAI01_daily_agg
+---------------------------------------------
+  >> Loading configuration from /home/app/jobs/data_staging_acsc/acsc_CFPAI02_daily_agg.yaml
+  >> Creating job acsc_CFPAI02_daily_agg
+    >> Adding step Transform Step 1
+    >> Adding step Transform Step 2
+  >> Adding schedule to the job acsc_CFPAI02_daily_agg
+  >> Adding server to the job acsc_CFPAI02_daily_agg
+---------------------------------------------
+```
+
+
+### Generate cipher keys
+Run ```rake cipher:generate_keys```
+```bash
+#  rake cipher:generate_keys
+Saving private Key (/home/app/.cipher/schematic.priv) ... done
+Saving public key (/home/app/.cipher/schematic.pub) ...done
+```
+
+### Generate GitOps config
+Run ```rake gitops:generate```, then all GitOps config will be generated under /home/app
+```bash
+/home/app/gitops/
+├── base
+│   └── cipher-configmap.yaml
+└── overlays
+    └── dev
+        └── configmap
+            ├── credentials.yaml
+            ├── database.yaml
+            └── jobs
+                ├── acsc_CFPAI01_daily_agg.yaml
+                └── acsc_CFPAI02_daily_agg.yaml
 ```
 
 ## Building/Push applicaiton images
@@ -276,10 +359,9 @@ make push.app.rel
 Here is the project folder structure for a sample project:
 
 ```bash
-.
+data-staging_acsc
 |-- CHANGELOG.md
 |-- README.md
-|-- VERSION
 |-- docker
 |   |-- Makefile
 |   |-- Makefile.env
@@ -301,9 +383,8 @@ Here is the project folder structure for a sample project:
 |   |   |   |-- cipher.env
 |   |   |   |-- database.env
 |   |   |   |-- jobs
-|   |   |   |   |-- acsc_hist_table01a_env.yaml
-|   |   |   |   |-- acsc_hist_table01b_env.yaml
-|   |   |   |   `-- general.env
+|   |   |   |   |-- acsc_CFPAI01_daily_agg.env
+|   |   |   |   `-- acsc_CFPAI02_daily_agg.env
 |   |   |   `-- secret.env
 |   |   `-- mssql
 |   |       |-- docker-compose.yaml
@@ -316,6 +397,7 @@ Here is the project folder structure for a sample project:
 |       |-- base_image.env
 |       |-- cipher.env
 |       |-- database.env
+|       |-- dev_image.env
 |       |-- docker.env
 |       |-- mssql
 |       |   |-- database.env
@@ -323,17 +405,30 @@ Here is the project folder structure for a sample project:
 |       `-- project.env
 `-- src
     |-- Rakefile
+    |-- VERSION
     |-- db
     |   `-- migrations
-    |-- env
-    |   `-- jobs
+    |       |-- 20231116093953_create_table_CFPAI01.rb
+    |       |-- 20231116093959_create_table_CFPAI02.rb
+    |       |-- 20231116094039_CFPAI02_add_column_created_at.rb
+    |       `-- 20231116094808_CFPAI01_add_index_VALDAI_PRIDAI.rb
+    |-- gitops
+    |   |-- base
+    |   |   `-- cipher-configmap.yaml
+    |   `-- overlays
+    |       `-- dev
+    |           `-- configmap
+    |               |-- credentials.yaml
+    |               |-- database.yaml
+    |               `-- jobs
+    |                   |-- acsc_CFPAI01_daily_agg.yaml
+    |                   `-- acsc_CFPAI02_daily_agg.yaml
     |-- jobs
-    |   |-- acsc_hist
-    |   |   |-- acsc_hist_table01a.yaml
-    |   |   `-- acsc_hist_table01b.yaml
-    |   `-- general.yaml
+    |   `-- data_staging_acsc
+    |       |-- acsc_CFPAI01_daily_agg.yaml
+    |       `-- acsc_CFPAI02_daily_agg.yaml
     `-- stored_procedures
-        `-- acsc_hist
-            |-- acsc_hist_table01a.sql
-            `-- acsc_hist_table01b.sql
+        `-- data_staging_acsc
+            |-- sp_acsc_CFPAI01_daily_agg.sql
+            `-- sp_acsc_CFPAI02_daily_agg.sql
 ```

@@ -50,11 +50,11 @@ module Schematic
             result = db_connection.fetch(check_sql).all
 
             if result.nil? || result.empty?
-              puts "  >> Create new stored procedure."
+              puts "  >> Create new stored procedure.\n\n"
               db_connection.run(command)
             else
               alter_command = command.gsub('CREATE PROCEDURE', 'ALTER PROCEDURE')
-              puts "  >> Update existing stored procedure."
+              puts "  >> Update existing stored procedure.\n\n"
               db_connection.run(alter_command)
             end
 
