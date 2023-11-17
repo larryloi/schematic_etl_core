@@ -8,7 +8,7 @@ An Rdb schema migration tools that develop on ruby and Supporting SQL Server and
 - [How to use it for development?](#how-to-use-it-for-development)
   - [Prepare New Project from template](#prepare-new-project-from-template)
     - [Get the schematic base code from github](#get-the-schematic-base-code-from-github)
-    - [Build the schematic base image for development](#build-the-schematic-base-image-for-development)
+    - [How to get schematic\_base image for development](#how-to-get-schematic_base-image-for-development)
     - [Create development project](#create-development-project)
   - [Start development in new project folder](#start-development-in-new-project-folder)
     - [Start project container](#start-project-container)
@@ -48,18 +48,27 @@ git clone https://github.com/larryloi/schematic.git
  1. Open Remote Explorer and connect Remote Host
  2. Clone Git Repository to /home/ds/_Devlopment/temp
 
-### Build the schematic base image for development
-**Open Terminal and run build image command**
-```bash
-cd docker
-make build.base.rel
-```
-**The below schematic-base will be built**
+### How to get schematic_base image for development
+1. **Build from source code (Internet connection avaliable)**
+   Run build image command
+    ```bash
+    cd schematic/docker
+    make build.base.rel
+    ```
+1. **Pull image from Quay.io  (Only Docker repositry avaliable)**
+    ```bash
+    docker login quay.io
+
+    docker pull quay.io/larryloi/schematic_base:latest
+    
+    docker pull quay.io/larryloi/schematic_base:0.2.5-rel.0
+    ```
+**The below schematic-base you will get**
 ```bash
 ubt23 :: temp/schematic/docker ‹main› » docker images
 REPOSITORY                        TAG                     IMAGE ID       CREATED        SIZE
-quay.io/metasync/schematic_base   0.2.5-rel               7a4144e23fd4   18 minutes ago   137MB
-quay.io/metasync/schematic_base   0.2.5-rel.0             7a4144e23fd4   18 minutes ago   137MB
+quay.io/larryloi/schematic_base   0.2.5-rel               7a4144e23fd4   18 minutes ago   137MB
+quay.io/larryloi/schematic_base   0.2.5-rel.0             7a4144e23fd4   18 minutes ago   137MB
 ```
 ### Create development project
 In schematic home path, execute the below command, that creates project template for development. This project folder will be created in parent folder in this case.
@@ -78,7 +87,13 @@ We need to kick start the container that including dev.app and dev.db to devlop 
 vi docker/make.env/mssql/secret.env
 ```
 
-The below environment file that indicated which base image to use for container startup. The ```DEV_BASE_IMAGE_VERSION``` AND ```DEV_BASE_IMAGE_RELEASE_TAG``` may need to change accordingly.
+The environment file 
+```docker/make.env/base_image.env``` 
+
+that indicated which base image to use for container startup. 
+- ```DEV_BASE_IMAGE_VERSION``` 
+- ```DEV_BASE_IMAGE_RELEASE_TAG``` 
+may need to change accordingly.
 ```bash
 cat docker/make.env/base_image.env
 
@@ -197,9 +212,11 @@ Sequel.migration do
 end
 ```
 For more detail information. just check the below 
+- Sequel
+  https://github.com/jeremyevans/sequel/blob/master/doc/schema_modification.rdoc
 
-https://github.com/jeremyevans/sequel/blob/master/doc/schema_modification.rdoc
-
+- Tiny_tds
+  https://rubydoc.info/gems/tiny_tds/0.3.2
 
 **Deploy migration scripts**
 
@@ -351,6 +368,7 @@ make build.app.rel
 
 Run below command to push your application images to repositry
 ```bash
+docker tag quay.io/larryloi/data-staging_acsc:0.1.0-rel.0 quay.io/larryloi/data-staging_acsc:latest
 make push.app.rel
 ```
 

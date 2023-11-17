@@ -7,7 +7,7 @@ Schematic is a tool to bootstrap a project that develops and manages schema migr
 First, clone Schematic:
 
 ```
-git clone https://github.com/metasync/schematic
+git clone https://github.com/larryloi/schematic
 cd schematic
 ```
 

@@ -51,22 +51,22 @@ LABEL org.opencontainers.image.title=${project}-${app} \
     org.opencontainers.image.source=${app_source} \
     org.opencontainers.image.created=${created_at} \
     \
-    org.metasync.project=${project} \
-    org.metasync.app=${app} \
-    org.metasync.app.release=${version}-${release_tag}.${build_number} \
-    org.metasync.app.version=${version} \
-    org.metasync.app.release_tag=${release_tag} \
-    org.metasync.app.build_number=${build_number} \
-    org.metasync.maintainer=${authors} \
+    org.larryloi.project=${project} \
+    org.larryloi.app=${app} \
+    org.larryloi.app.release=${version}-${release_tag}.${build_number} \
+    org.larryloi.app.version=${version} \
+    org.larryloi.app.release_tag=${release_tag} \
+    org.larryloi.app.build_number=${build_number} \
+    org.larryloi.maintainer=${authors} \
     \
-    org.metasync.image.repo=${image_repo} \
-    org.metasync.image.tag=${image_tag} \
-    org.metasync.image.name=${image_repo}:${image_tag} \
+    org.larryloi.image.repo=${image_repo} \
+    org.larryloi.image.tag=${image_tag} \
+    org.larryloi.image.name=${image_repo}:${image_tag} \
     \
-    org.metasync.base_image.repo=${base_image_repo} \
-    org.metasync.base_image.tag=${base_image_tag} \
-    org.metasync.base_image.name=${base_image_repo}:${base_image_tag} \
+    org.larryloi.base_image.repo=${base_image_repo} \
+    org.larryloi.base_image.tag=${base_image_tag} \
+    org.larryloi.base_image.name=${base_image_repo}:${base_image_tag} \
     \
-    org.metasync.ruby.version=${ruby_version} \
-    org.metasync.alpine.version=${alpine_version}
+    org.larryloi.ruby.version=${ruby_version} \
+    org.larryloi.alpine.version=${alpine_version}
 
