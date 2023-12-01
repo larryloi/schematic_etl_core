@@ -12,17 +12,17 @@ ARG app_home=/home/app
 ENV APP_HOME=${app_home}
 ENV HISTFILE=${APP_HOME}/.bash_history
 
-RUN apk -U upgrade && \
-    mkdir -p ${APP_HOME}
+# RUN apk -U upgrade && \
+RUN mkdir -p ${APP_HOME}
 
 WORKDIR ${APP_HOME}
 
 COPY . .
 
-RUN apk add --no-cache \
-        freetds-dev mariadb-dev libpq-dev \
-        gcompat curl make && \
-    chown -R 1001:0 ${SCHEMATIC_HOME} && \
+# RUN apk add --no-cache \
+#         freetds-dev mariadb-dev libpq-dev \
+#         gcompat curl make && \
+RUN chown -R 1001:0 ${SCHEMATIC_HOME} && \
     chmod -R g=u ${SCHEMATIC_HOME} && \
     chown -R 1001:0 ${APP_HOME} && \
     chmod -R g=u ${APP_HOME}

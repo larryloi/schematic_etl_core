@@ -11,8 +11,7 @@ services:
       MSSQL_AGENT_ENABLED: 1
     working_dir: ${DB_HOME}
     ports: 
-      - 1433:1433
+      - 1434:1433
     volumes:
-      - ./.data/dev_${DEV_DB_NAME}_mssql:/var/opt/mssql
       - ./mssql/scripts:${DB_HOME}
-  
+      # - ./.data/dev_${DEV_DB_NAME}_mssql:/var/opt/mssql

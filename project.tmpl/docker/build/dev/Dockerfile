@@ -12,16 +12,16 @@ ARG app_home=/home/app
 ENV APP_HOME=${app_home}
 ENV HISTFILE=${APP_HOME}/.bash_history
 
-RUN apk -U upgrade && \
-    mkdir -p ${APP_HOME}
+# RUN apk -U upgrade && \
+RUN mkdir -p ${APP_HOME}
 
 WORKDIR ${APP_HOME}
 
 COPY . .
 
-RUN apk add --no-cache \
-        freetds-dev mariadb-dev libpq-dev \
-        gcompat curl make  
+# RUN apk add --no-cache \
+#     freetds-dev mariadb-dev libpq-dev \
+#       gcompat curl make  
 
 ARG project
 ARG app
