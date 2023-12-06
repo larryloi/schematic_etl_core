@@ -9,11 +9,12 @@ module Schematic
       job_template = <<~JOBTEMPLATE
         # frozen_string_literal: true
         ---
+          job_name: <%= ENV['TMPL_JOB_NAME'] %>
           enabled: <%= ENV['TMPL_ENABLED'] %>
           delete_level: <%= ENV['TMPL_DELETE_LEVEL'] %>
           description: _TEMPLATE
           category_name: ETL - Data Staging
-          owner_login_name: schematic
+          owner_login_name: <%= ENV['TMPL_OWNER_LOGIN_NAME'] %>
           schedule_name: _Hourly_Schedule_
           schedule_enabled: <%= ENV['TMPL_SCHEDULE_ENABLED'] %>
           schedule_freq_type: 4 <%= ENV['TMPL_SCHEDULE_FREQ_TYPE'] %>
@@ -40,6 +41,7 @@ module Schematic
       JOBTEMPLATE
 
       job_env_template = <<~ENVTEMPLATE
+        TMPL_JOB_NAME=tmpl_job_name
         TMPL_ENABLED=true
         TMPL_NOTIFY_LEVEL_EMAIL=false
         TMPL_NOTIFY_LEVEL_NETSEND=false
@@ -62,13 +64,13 @@ module Schematic
       job_template.gsub!("TMPL_", "#{name.upcase}_")
       job_env_template.gsub!("TMPL_", "#{name.upcase}_")
 
-      file_name = "#{name}.yaml"
-      env_file_name = "#{name}.env"
+      job_file_name = "#{name.downcase.gsub('_','-')}.yaml"
+      env_file_name = "#{name.downcase.gsub('_','-')}.env"
 
       FileUtils.mkdir_p(job_dir)
       FileUtils.mkdir_p(job_env_dir)
 
-      job_file = File.join(job_dir, file_name)
+      job_file = File.join(job_dir, job_file_name)
       env_file = File.join(job_env_dir, env_file_name)
 
       File.open(job_file, 'w') do |file|
@@ -99,13 +101,13 @@ module Schematic
 
           puts "  >> Loading configuration from #{file}\n"
 
-          config_job_name = File.basename(file, ',*').chomp(File.extname(file))
+          #config_job_name = File.basename(file, ',*').chomp(File.extname(file))
 
           # Set variables
           category_name = config['category_name']
           owner_login_name = config['owner_login_name']
           database_name = config['database_name']
-          job_name = config_job_name
+          job_name = config['job_name']
           #schedule_uid = SecureRandom.uuid
 
           # Check if job exists
