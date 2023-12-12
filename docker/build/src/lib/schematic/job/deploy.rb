@@ -41,13 +41,13 @@ module Schematic
       JOBTEMPLATE
 
       job_env_template = <<~ENVTEMPLATE
-        TMPL_JOB_NAME=tmpl_job_name
+        TMPL_JOB_NAME=#{name}
         TMPL_ENABLED=true
         TMPL_NOTIFY_LEVEL_EMAIL=false
         TMPL_NOTIFY_LEVEL_NETSEND=false
         TMPL_NOTIFY_LEVEL_PAGE=false
         TMPL_DELETE_LEVEL=false
-        TMPL_OWNER_LOGIN_NAME=schematic
+        TMPL_OWNER_LOGIN_NAME=SVC_DS_DEPLOY
         TMPL_SCHEDULE_ENABLED=true
         TMPL_SCHEDULE_FREQ_TYPE=4
         TMPL_SCHEDULE_FREQ_INTERVAL=1
