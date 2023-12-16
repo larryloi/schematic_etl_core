@@ -22,6 +22,7 @@ An Rdb schema migration tools that develop on ruby and Supporting SQL Server and
     - [Generate cipher keys](#generate-cipher-keys)
     - [Generate GitOps config](#generate-gitops-config)
   - [Building/Push applicaiton images](#buildingpush-applicaiton-images)
+    - [Sequel Migration script format conversion](#sequel-migration-script-format-conversion)
   - [Project folder structure](#project-folder-structure)
 
 
@@ -372,6 +373,50 @@ docker tag quay.io/larryloi/data-staging_acsc:0.1.0-rel.0 quay.io/larryloi/data-
 make push.app.rel
 ```
 
+### Sequel Migration script format conversion
+```bash
+/home/app # rake sqlsequel:create
+Empty file created. (/home/app/.sqlsequel/a.sql)
+
+/home/app # rake sqlsequel:conver
+CREATE TABLE [DW_ETL].[Mytest](
+        [rid] [bigint] IDENTITY(1,1) NOT NULL,
+        [round_id] [nvarchar](255) NOT NULL,
+        [accounting_date_id] [int] NOT NULL,
+        [game_id] [int] NOT NULL,
+        [workstation] [nvarchar](255) NOT NULL,
+        [slip_id] [int] NOT NULL,
+        [amt] [decimal](10, 4) NOT NULL,
+        [payout_type] [nvarchar](255) NOT NULL,
+        [round_completed_at] [datetime] NOT NULL,
+        [denom_set_id] [bigint] NOT NULL,
+        [member_id] [varchar](255) NOT NULL,
+        [description] [nvarchar](max) NULL,
+        [remark] [text] NULL,
+        [created_at] [datetime] NOT NULL,
+        [updated_at] [datetime2](7) NOT NULL,
+Sequel.migration do
+  change do
+    create_table(Sequel.qualify(:DW_ETL, :Mytest)) do
+      column :rid, 'bigint', auto_increment: true, primary_key: true, null: false
+      column :round_id, 'nvarchar', size: 255, null: false
+      column :accounting_date_id, Integer, null: false
+      column :game_id, Integer, null: false
+      column :workstation, 'nvarchar', size: 255, null: false
+      column :slip_id, Integer, null: false
+      column :amt, 'Decimal', size: [10, 4], null: false
+      column :payout_type, 'nvarchar', size: 255, null: false
+      column :round_completed_at, DateTime, null: false
+      column :denom_set_id, 'bigint', null: false
+      column :member_id, String, size: 255, null: false
+      column :description, 'nvarchar', size: :max, null: true
+      column :remark, String, text: true, null: true
+      column :created_at, DateTime, null: false
+      column :updated_at, 'DateTime2(7)', null: false
+    end
+  end
+end
+```
 
 ## Project folder structure
 Here is the project folder structure for a sample project:
