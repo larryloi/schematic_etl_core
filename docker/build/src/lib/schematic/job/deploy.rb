@@ -61,8 +61,8 @@ module Schematic
         TMPL_SCHEDULE_ACTIVE_END_TIME=235959
       ENVTEMPLATE
 
-      job_template.gsub!("TMPL_", "#{name.upcase}_")
-      job_env_template.gsub!("TMPL_", "#{name.upcase}_")
+      job_template.gsub!("TMPL_", "#{name.upcase.gsub('-','_')}_")
+      job_env_template.gsub!("TMPL_", "#{name.upcase.gsub('-','_')}_")
 
       job_file_name = "#{name.downcase.gsub('_','-')}.yaml"
       env_file_name = "#{name.downcase.gsub('_','-')}.env"

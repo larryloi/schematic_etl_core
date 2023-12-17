@@ -5,7 +5,7 @@ module Schematic
 
     def create(spname)
       sp_template = <<~TEMPLATE
-        CREATE PROCEDURE [dbo].[sp_name]
+        CREATE PROCEDURE [dbo].[#{spname}]
         AS
         BEGIN
           SELECT * FROM sys.objects o JOIN sys.schemas s ON o.schema_id = s.schema_id
@@ -32,7 +32,7 @@ module Schematic
         sql = File.read(file)
 
         # Split the SQL script into separate commands at each 'GO' statement
-        commands = sql.split('GO')
+        commands = sql.split("\nGO")
         puts "\n  >> Executing script from #{file}\n"
 
         commands.each do |command|

@@ -38,6 +38,7 @@ module Schematic
 
         sql = File.read(sql_file)
         puts sql
+        puts "-"*60 + "\n\n"
         File.open(sql_file, 'r') do |file|
           lines = file.readlines
 

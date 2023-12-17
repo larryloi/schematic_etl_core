@@ -14,9 +14,7 @@ module Schematic
       set_default_values
     end
 
-    def default_job_dir
-      File.join("jobs", ENV['DB_NAME'])
-    end
+    def default_job_dir = "jobs"
 
     def job_dir
       @job_dir ||= init_job_dir

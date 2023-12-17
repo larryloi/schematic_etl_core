@@ -14,9 +14,7 @@ module Schematic
       set_default_values
     end
 
-    def default_sp_dir
-      File.join("stored_procedures", options[:db_name])
-    end
+    def default_sp_dir = "stored_procedures"
 
     def sp_dir
       @sp_dir ||= init_sp_dir
