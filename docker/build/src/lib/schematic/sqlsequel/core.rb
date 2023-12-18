@@ -71,6 +71,10 @@ module Schematic
                   when 'datetime' then 'DateTime'
                   when 'datetime2' then "'DateTime2(7)'"
                   when 'text' then "String, text: true"
+                  when 'date' then "Date"
+                  when 'time' then "Time, only_time: true"
+                  when 'boolean' then "TrueClass"
+                    
                   else raise "Unknown type: #{type}"
                   end
             migration += "      column :#{name}, #{type}, null: #{null}\n" if name && type
