@@ -54,7 +54,7 @@ module Schematic
             type = type_match[1] if type_match
             ident_match = line.match(/IDENTITY\((\d+),(\d+)\)/) if ['int','bigint'].include?(type) && line.match(/IDENTITY\((\d+),(\d+)\)/)
             ident_match = " IDENTITY(#{ident_match[1].to_s}, #{ident_match[1].to_s}) " if ident_match
-            sizing_match = line.match(/(\d+)/) || line.match(/(max)/) if (type == 'varchar' && (line.match(/(\d+)/))|| line.match(/(max)/)) || (type == 'nvarchar' && ( line.match(/(\d+)/) || line.match(/(max)/) ) )
+            sizing_match = line.match(/(\d+)/) || line.match(/(max)/) if ['char','varchar','nvarchar'].include?(type) && (line.match(/(\d+)/))|| line.match(/(max)/)
             sizing = sizing_match[1] if sizing_match
             precision_scale_match = line.match(/(\d+, \d+)/) if type == 'decimal' && line.match(/(\d+, \d+)/)
             #precision, scale = precision_scale_match[1].to_i, precision_scale_match[2].to_i if precision_scale_match
@@ -63,6 +63,7 @@ module Schematic
 
             type = case type
                   when 'bigint' then ident_match ? "'bigint', auto_increment: true, primary_key: true" : "'bigint'"
+                  when 'char' then "String, size: #{sizing}, fixed: true"
                   when 'varchar' then sizing == 'max' ? "String, size: :max" : "String, size: #{sizing}"
                   when 'nvarchar' then sizing == 'max' ? "'nvarchar', size: :max" : "'nvarchar', size: #{sizing}"
                   when 'int' then ident_match ? "Integer, auto_increment: true, primary_key: true" : 'Integer'

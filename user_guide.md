@@ -387,7 +387,8 @@ CREATE TABLE [DW_ETL].[Mytest](
         [workstation] [nvarchar](255) NOT NULL,
         [slip_id] [int] NOT NULL,
         [amt] [decimal](10, 4) NOT NULL,
-        [payout_type] [nvarchar](255) NOT NULL,
+        [bet_type] [char](85) NOT NULL,
+        [payout_type] [char](45) NOT NULL,
         [round_completed_at] [datetime] NOT NULL,
         [denom_set_id] [bigint] NOT NULL,
         [member_id] [varchar](255) NOT NULL,
@@ -405,7 +406,8 @@ Sequel.migration do
       column :workstation, 'nvarchar', size: 255, null: false
       column :slip_id, Integer, null: false
       column :amt, 'Decimal', size: [10, 4], null: false
-      column :payout_type, 'nvarchar', size: 255, null: false
+      column :bet_type, String, size: 85, fixed: true, null: false
+      column :payout_type, String, size: 45, fixed: true, null: false
       column :round_completed_at, DateTime, null: false
       column :denom_set_id, 'bigint', null: false
       column :member_id, String, size: 255, null: false

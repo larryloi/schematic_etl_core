@@ -61,9 +61,11 @@ module Schematic
         TMPL_SCHEDULE_ACTIVE_END_TIME=235959
       ENVTEMPLATE
 
+      # Re-define OS environment variable names with upper case, hyphen change to underscore. OS
       job_template.gsub!("TMPL_", "#{name.upcase.gsub('-','_')}_")
       job_env_template.gsub!("TMPL_", "#{name.upcase.gsub('-','_')}_")
 
+      # Filename if contain underscore change to hyphen due to OCP meta config restriction
       job_file_name = "#{name.downcase.gsub('_','-')}.yaml"
       env_file_name = "#{name.downcase.gsub('_','-')}.env"
 

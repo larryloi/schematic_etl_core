@@ -21,7 +21,7 @@ COPY . .
 
 # RUN apk add --no-cache \
 #     freetds-dev mariadb-dev libpq-dev \
-#       gcompat curl make  
+#     gcompat curl make  
 
 ARG project
 ARG app
