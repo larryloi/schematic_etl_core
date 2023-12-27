@@ -390,6 +390,7 @@ CREATE TABLE [DW_ETL].[Mytest](
         [workstation] [nvarchar](max) NOT NULL,
         [slip_id] [int] NOT NULL,
         [amt] [decimal](10, 4) NOT NULL,
+        [jp_win_amt] [numeric](10, 4) NOT NULL,
         [bet_type] [char](85) NOT NULL,
         [payout_type] [char](45) NOT NULL,
         [round_completed_at] [datetime] NOT NULL,
@@ -402,22 +403,23 @@ CREATE TABLE [DW_ETL].[Mytest](
         [acct_date] [date] NOT NULL,
         [acct_time] [time] NOT NULL
         [is_settled] [boolean] NOT NULL,
-
+------------------------------------------------------------
 
 Sequel.migration do
   change do
     create_table(Sequel.qualify(:DW_ETL, :Mytest)) do
-      column :rid, 'bigint' , auto_increment: true, primary_key: true, null: false
+      column :rid, 'bigint', auto_increment: true, primary_key: true, null: false
       column :round_id, 'nvarchar', size: 255, null: false
       column :accounting_date_id, Integer, null: false
       column :game_id, Integer, null: false
       column :workstation, 'nvarchar', size: :max, null: false
       column :slip_id, Integer, null: false
       column :amt, 'Decimal', size: [10, 4], null: false
+      column :jp_win_amt, 'Numeric', size: [10, 4], null: false
       column :bet_type, String, size: 85, fixed: true, null: false
       column :payout_type, String, size: 45, fixed: true, null: false
       column :round_completed_at, DateTime, null: false
-      column :denom_set_id, 'bigint' , null: false
+      column :denom_set_id, 'bigint', null: false
       column :member_id, String, size: 255, null: false
       column :description, 'nvarchar', size: :max, null: true
       column :remark, String, text: true, null: true

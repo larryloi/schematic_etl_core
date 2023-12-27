@@ -56,7 +56,7 @@ module Schematic
             ident_match = " IDENTITY(#{ident_match[1].to_s}, #{ident_match[1].to_s}) " if ident_match
             sizing_match = line.match(/(\d+)/) || line.match(/(max)/) if ['char','varchar','nvarchar'].include?(type) && (line.match(/(\d+)/))|| line.match(/(max)/)
             sizing = sizing_match[1] if sizing_match
-            precision_scale_match = line.match(/(\d+, \d+)/) if type == 'decimal' && line.match(/(\d+, \d+)/)
+            precision_scale_match = line.match(/(\d+, \d+)/) if ['decimal','numeric'].include?(type) && line.match(/(\d+, \d+)/)
             #precision, scale = precision_scale_match[1].to_i, precision_scale_match[2].to_i if precision_scale_match
             null = !line.include?('NOT NULL')
             #puts "#{line}                                                 >>> #{name} #{type}  #{sizing}  #{precision}  #{scale}  #{null} *  #{ident_match}"
@@ -68,6 +68,7 @@ module Schematic
                   when 'nvarchar' then sizing == 'max' ? "'nvarchar', size: :max" : "'nvarchar', size: #{sizing}"
                   when 'int' then ident_match ? "Integer, auto_increment: true, primary_key: true" : 'Integer'
                   when 'decimal' then "'Decimal', size: [#{precision_scale_match.to_s}]"
+                  when 'numeric' then "'Numeric', size: [#{precision_scale_match.to_s}]"
                   when 'datetime' then 'DateTime'
                   when 'datetime2' then "'DateTime2(7)'"
                   when 'text' then "String, text: true"
