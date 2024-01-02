@@ -54,12 +54,12 @@ module Schematic
             type = type_match[1] if type_match
             ident_match = line.match(/IDENTITY\((\d+),(\d+)\)/) if ['int','bigint'].include?(type) && line.match(/IDENTITY\((\d+),(\d+)\)/)
             ident_match = " IDENTITY(#{ident_match[1].to_s}, #{ident_match[1].to_s}) " if ident_match
-            sizing_match = line.match(/(\d+)/) || line.match(/(max)/) if ['char','varchar','nvarchar'].include?(type) && (line.match(/(\d+)/))|| line.match(/(max)/)
+            sizing_match = line.match(/\((\d+)\)/) || line.match(/(max)/) if ['char','varchar','nvarchar'].include?(type) && (line.match(/\((\d+)\)/))|| line.match(/(max)/)
             sizing = sizing_match[1] if sizing_match
-            precision_scale_match = line.match(/(\d+, \d+)/) if ['decimal','numeric'].include?(type) && line.match(/(\d+, \d+)/)
+            precision_scale_match = line.match(/(\d+, \d+)/) if ['decimal','numeric'].include?(type) && line.match(/\((\d+, \d+)\)/)
             #precision, scale = precision_scale_match[1].to_i, precision_scale_match[2].to_i if precision_scale_match
             null = !line.include?('NOT NULL')
-            #puts "#{line}                                                 >>> #{name} #{type}  #{sizing}  #{precision}  #{scale}  #{null} *  #{ident_match}"
+            #puts "#{line}                                                 >>> #{name} #{type} #{sizing} #{precision_scale_match} #{null} *  #{ident_match}"
 
             type = case type
                   when 'bigint' then ident_match ? "'bigint', auto_increment: true, primary_key: true" : "'bigint'"
