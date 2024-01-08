@@ -38,7 +38,7 @@ module Schematic
         commands.each do |command|
           unless command.strip.empty?
             # Extract schema and procedure name from the command
-            match_data = command.match(/CREATE PROCEDURE \[(?<schema>.+)\]\.\[(?<procedure>.+)\]/)
+            match_data = command.match(/CREATE\s+PROCEDURE\s+\[(?<schema>.+)\]\.\[(?<procedure>.+)\]/i)
             next unless match_data
 
             schema_name = match_data[:schema]
@@ -53,7 +53,7 @@ module Schematic
               puts "  >> Create new stored procedure.\n\n"
               db_connection.run(command)
             else
-              alter_command = command.gsub('CREATE PROCEDURE', 'ALTER PROCEDURE')
+              alter_command = command.gsub(/CREATE\s+PROCEDURE/i, 'ALTER PROCEDURE')
               puts "  >> Update existing stored procedure.\n\n"
               db_connection.run(alter_command)
             end

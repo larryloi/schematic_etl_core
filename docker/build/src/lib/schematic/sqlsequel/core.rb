@@ -74,7 +74,7 @@ module Schematic
                   when 'text' then "String, text: true"
                   when 'date' then "Date"
                   when 'time' then "Time, only_time: true"
-                  when 'boolean' then "TrueClass"
+                  when 'bit','boolean' then "TrueClass"
                     
                   else raise "Unknown type: #{type}"
                   end

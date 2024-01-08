@@ -38,7 +38,7 @@ module Schematic
         commands.each do |command|
           unless command.strip.empty?
             # Extract schema and function name from the command
-            match_data = command.match(/CREATE FUNCTION \[(?<schema>.+)\]\.\[(?<function>.+)\]/)
+            match_data = command.match(/CREATE\s+FUNCTION\s+\[(?<schema>.+)\]\.\[(?<function>.+)\]/i)
             next unless match_data
             
             schema_name = match_data[:schema]
@@ -53,7 +53,7 @@ module Schematic
               puts "  >> Create new function.\n\n"
               db_connection.run(command)
             else
-              alter_command = command.gsub('CREATE FUNCTION', 'ALTER FUNCTION')
+              alter_command = command.gsub(/CREATE\s+FUNCTION/i, 'ALTER FUNCTION')
               puts "  >> Update existing function.\n\n"
               db_connection.run(alter_command)
             end
