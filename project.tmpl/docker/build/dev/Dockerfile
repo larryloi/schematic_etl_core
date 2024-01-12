@@ -1,4 +1,4 @@
-ARG base_image_repo=quay.io/larryloi/schematic_base
+ARG base_image_repo=quay.io/larryloi/schematic_etl_core_base
 ARG base_image_tag
 FROM ${base_image_repo}:${base_image_tag}
 

@@ -48,7 +48,7 @@ module Schematic
     end
 
     def run_migrator(**opts)
-      Sequel::Migrator.run(
+      Sequel::TimestampMigrator.run(
         db_connection,
         migration_dir,
         table: migration_table, **opts

@@ -20,7 +20,7 @@ module Schematic
       File.join("db", "migrations")
     end
 
-    def default_migration_table = nil
+    def default_migration_table = "schema_migrations_etl_core"
 
     def migration_dir
       @migration_dir ||= init_migration_dir
